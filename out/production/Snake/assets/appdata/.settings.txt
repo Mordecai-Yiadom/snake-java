@@ -1,0 +1,3 @@
+Difficulty: EASY
+SFX Volume: 100
+Music Volume: 100
