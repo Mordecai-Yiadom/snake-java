@@ -7,6 +7,8 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.*;
 import javax.imageio.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.URL;
 
 
@@ -16,7 +18,7 @@ import java.net.URL;
  *  This class manages general application logic
  * -----------------------------------------------------------------------------------
  */
-public class AppManager
+public class AppManager implements WindowListener
 {
     //Singleton variable
     private static final AppManager APP_MANAGER = new AppManager();
@@ -36,17 +38,29 @@ public class AppManager
     private GameBoard gameBoard;
     private GameBoardFactory gameBoardFactory;
     private SettingsMenu settingsMenu;
+    private AppDataManager appDataManager;
 
     private AppManager()
     {
         initComponents();
-
     }
     private void initComponents()
     {
         appFrame = new AppFrame();
 
         titleScreen = new TitleScreen();
+        appDataManager = AppDataManager.getInstance();
+
+        try
+        {
+            appDataManager.readScore();
+            appDataManager.readSettings();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
         gameBoardFactory = new GameBoardFactory();
 
         settingsMenu = new SettingsMenu();
@@ -56,6 +70,7 @@ public class AppManager
     public static void launchApp()
     {
         getInstance().loadGUITextures();
+
         APP_MANAGER.displayTitleScreen();
     }
 
@@ -89,18 +104,47 @@ public class AppManager
         appFrame.setIconImage(new ImageIcon(image).getImage());
     }
 
-
     public void closeApp()
     {
-        System.exit(0);
+        try
+        {
+           appDataManager.writeScore();
+           appDataManager.writeSettings();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            System.exit(0);
+        }
     }
-
-    public void writeToScoreFile()
-    {}
-
-
 
     //Singleton access method
     public static AppManager getInstance() {return APP_MANAGER;}
 
+    @Override
+    public void windowOpened(WindowEvent e) {}
+
+    @Override
+    public void windowClosing(WindowEvent e)
+    {
+        closeApp();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {}
+
+    @Override
+    public void windowIconified(WindowEvent e) {}
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {}
+
+    @Override
+    public void windowActivated(WindowEvent e) {}
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {}
 }

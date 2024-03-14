@@ -1,5 +1,6 @@
 package me.morde.snake.game;
 
+import me.morde.snake.app.AppDataManager;
 import me.morde.snake.app.AppManager;
 import me.morde.snake.app.SoundManager;
 
@@ -48,7 +49,6 @@ public class GameBoard extends JPanel {
 
     private void init()
     {
-
         setFocusable(true);
         setPreferredSize(new Dimension(AppManager.SCREEN_WIDTH, AppManager.SCREEN_HEIGHT));
         setBackground(BOARD_COLOR);
@@ -156,9 +156,26 @@ public class GameBoard extends JPanel {
     {
         timer.stop();
 
-        /* TODO
-            make a GAME OVER screen that also shows score as well as previous high score
-         */
+        //Determine High Score
+        switch(this.difficulty)
+        {
+            case EASY:
+                if(this.score > AppDataManager.getInstance().getEasyScore())
+                    AppDataManager.getInstance().setEasyScore(this.score);
+                break;
+            case MEDIUM:
+                if(this.score > AppDataManager.getInstance().getMediumScore())
+                    AppDataManager.getInstance().setMediumScore(this.score);
+                break;
+            case HARD:
+                if(this.score > AppDataManager.getInstance().getHardScore())
+                    AppDataManager.getInstance().setHardScore(this.score);
+                break;
+        }
+
+
+
+        /* TODO || make a GAME OVER screen that also shows score as well as previous high score */
 
         if(!debugEnabled){AppManager.getInstance().displayTitleScreen();}
     }
@@ -290,33 +307,15 @@ public class GameBoard extends JPanel {
     public void setScore(int score){this.score = score;}
     public int getScore(){return this.score;}
 
-    private void drawVectorLines()
-    {
-        Graphics graphics = getGraphics();
-        graphics.setColor(Color.CYAN);
-
-        switch (direction)
-        {
-            case NORTH:
-                graphics.drawLine(snakeHeadX + (UNIT_SIZE/2), snakeHeadY, snakeHeadX + (UNIT_SIZE/2), snakeHeadY + UNIT_SIZE);
-                return;
-            case SOUTH:
-                graphics.drawLine(snakeHeadX + (UNIT_SIZE/2), snakeHeadY + UNIT_SIZE, snakeHeadX + (UNIT_SIZE/2), snakeHeadY + UNIT_SIZE);
-                return;
-            case EAST:
-                graphics.drawLine(snakeHeadY + (UNIT_SIZE/2), snakeHeadX, snakeHeadY + (UNIT_SIZE/2), snakeHeadX + UNIT_SIZE);
-                return;
-            case WEST:
-                graphics.drawLine(snakeHeadY + (UNIT_SIZE/2), snakeHeadX + UNIT_SIZE, snakeHeadY - (UNIT_SIZE/2), snakeHeadX + UNIT_SIZE);
-        }
-    }
 
 
     //Used to determine snake head direction
     private enum Direction {NORTH,SOUTH,EAST,WEST}
 
 
-    //UTILITY NESTED CLASSES
+    /***************************************************
+                    Nested Utility Classes
+     *****************************************************/
 
 
     //To be used to instantiate Timer for GameBoard
